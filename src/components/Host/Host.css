@@ -1,0 +1,112 @@
+.host {
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background-color: #00000090;
+  display: grid;
+}
+.host-container {
+  place-self: center;
+  width: max(40vw, 380px);
+  color: #808080;
+  background-color: white;
+  display: flex;
+  margin: auto;
+  flex-direction: column;
+  gap: 25px;
+  padding: 25px 30px;
+  border-radius: 8px;
+  font-size: 14px;
+  animation: fadeIn 0.5s;
+}
+.host-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  color: black;
+}
+.host-title RxCross2 {
+  cursor: pointer;
+}
+.host-input {
+  display: flex;
+  flex-direction: column;
+}
+.host-input input,
+textarea {
+  outline: none;
+  border: 1px solid #c9c9c9;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+.host-condition {
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  margin-right: 10px;
+}
+button {
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  color: white;
+  background-color: tomato;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.candidate-button {
+  background: #000;
+  margin-left: auto;
+}
+
+.candidate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.candiadte-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.candidate-photo {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.date-input-container {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+}
+
+.new-candidate {
+  display: flex;
+  flex-direction: column;
+}
+.cross {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cross:hover {
+  color: #000;
+}
+
+h3 {
+  color: #000;
+  margin-bottom: 10px;
+}

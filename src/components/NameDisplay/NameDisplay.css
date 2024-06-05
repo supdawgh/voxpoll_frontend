@@ -1,0 +1,15 @@
+.name-display{
+    margin-top: 30px;
+}
+.name-display h2{
+    font-size: max(5vw 24px);
+    font-weight: 300;
+}
+.name-display-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(230px, 1fr));
+    margin-top: 30px;
+    gap:30px;
+    row-gap: 50px;
+
+}
