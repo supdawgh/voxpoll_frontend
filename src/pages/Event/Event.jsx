@@ -15,8 +15,6 @@ const Event = ({ category, setCategory }) => {
     isLoading,
   } = useSWR(`${API_BASE_URl}/events`, fetcher);
 
-  console.log(events);
-
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
 
@@ -30,23 +28,27 @@ const Event = ({ category, setCategory }) => {
         <br />
         <hr />
         <div className="name-display-list">
-          {events.map((event, index) => (
-            <div key={event._id} className="name-item">
-              <Link to={`/event/${event._id}`}>
-                <div className="name-item-img-container">
-                  <img
-                    className="name-item-image"
-                    src={event.eventBanner}
-                    alt={event.eventName}
-                  />
-                </div>
-                <div className="name-item-info">
-                  <h3>{event.eventName}</h3>
-                  <p>{event.eventDescription}</p>
-                </div>
-              </Link>
-            </div>
-          ))}
+          {events.length > 0 ? (
+            events.map((event, index) => (
+              <div key={event._id} className="name-item">
+                <Link to={`/event/${event._id}`}>
+                  <div className="name-item-img-container">
+                    <img
+                      className="name-item-image"
+                      src={event.eventBanner}
+                      alt={event.eventName}
+                    />
+                  </div>
+                  <div className="name-item-info">
+                    <h3>{event.eventName}</h3>
+                    <p>{event.eventDescription}</p>
+                  </div>
+                </Link>
+              </div>
+            ))
+          ) : (
+            <div>No Events</div>
+          )}
         </div>
       </div>
     </div>

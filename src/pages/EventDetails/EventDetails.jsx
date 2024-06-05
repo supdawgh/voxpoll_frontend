@@ -9,16 +9,15 @@ import { format } from "date-fns";
 //import { Link } from 'react-router-dom'
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
-const EventDetails = ({ category, setCategory }) => {
+const EventDetails = ({ setShowLogin }) => {
   const { id } = useParams();
+  const { auth } = useContext(StoreContext);
 
   const {
     data: event,
     error,
     isLoading,
   } = useSWR(`${API_BASE_URl}/events/${id}`, fetcher);
-
-  console.log(event);
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
@@ -47,8 +46,14 @@ const EventDetails = ({ category, setCategory }) => {
               <div className="name-item-info">
                 <h3>{candidate.name}</h3>
                 <p>{candidate.bio}</p>
-                <button className="vote-button">Vote</button>
-
+                <button
+                  className="vote-button"
+                  onClick={() => {
+                    if (!auth.user) return setShowLogin(true);
+                  }}
+                >
+                  Vote
+                </button>
               </div>
             </div>
           ))}

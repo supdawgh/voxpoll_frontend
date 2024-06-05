@@ -15,7 +15,7 @@ const StoreContextProvider = ({ children }) => {
   const axiosins = axios.create({
     baseURL: "http://localhost:3500",
     headers: {
-      Authorization: `Bearer ${auth.token}`,
+      Authorization: `Bearer ${auth.accessToken}`,
     },
   });
 

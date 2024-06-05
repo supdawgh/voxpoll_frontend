@@ -2,20 +2,23 @@ import React, { useContext, useState } from "react";
 import "./LoginPopup.css";
 import { RxCross2 } from "react-icons/rx";
 import { StoreContext } from "../../context/StoreContext";
+import toast from "react-hot-toast";
+import { PiXLogoFill } from "react-icons/pi";
+
+const initialState = {
+  email: "",
+  password: "",
+  name: "",
+  citizenship: "",
+  RPP: "",
+};
 
 const LoginPopup = ({ setShowLogin }) => {
   const [currState, setCurrState] = useState("Login");
 
   const { auth, axiosins, setAuth } = useContext(StoreContext);
-  console.log(auth);
 
-  const [formState, setFormState] = useState({
-    email: "",
-    password: "",
-    name: "",
-    citizenship: "",
-    RPP: "",
-  });
+  const [formState, setFormState] = useState(initialState);
 
   const handleSignup = (e) => {
     e.preventDefault();
@@ -27,24 +30,30 @@ const LoginPopup = ({ setShowLogin }) => {
       !formState.citizenship ||
       !formState.RPP
     )
-      return;
+      return toast.error("Fill all fields.");
 
     try {
       axiosins
         .post("/register", {
-          user: formState.email,
-          pwd: formState.password,
+          email: formState.email,
+          password: formState.password,
           name: formState.name,
           citizenship: formState.citizenship,
           RPP: formState.RPP,
+          role: "voter",
         })
         .then((response) => {
-          if (response.ok) {
+          if (response.status === 201) {
+            toast.success("Account Created Successfull");
             setCurrState("Login");
+            setFormState(initialState);
+          }
+          if (response.status === 409) {
+            toast.error("Account Already Exists");
           }
         });
     } catch (error) {
-      console.log(error);
+      toast.error(error);
     }
   };
 
@@ -56,16 +65,25 @@ const LoginPopup = ({ setShowLogin }) => {
     try {
       axiosins
         .post("/auth", {
-          user: formState.email,
-          pwd: formState.password,
+          email: formState.email,
+          password: formState.password,
         })
         .then((response) => {
-          if (response.ok) {
-            setAuth({ ...response });
+          if (response.status === 200) {
+            toast.success("Login Successfull");
+            setShowLogin(false);
+
+            setAuth({ ...response.data });
+            setFormState(initialState);
+          }
+        })
+        .catch((response) => {
+          if (response.response.status == 401) {
+            toast.error("Credentials did not match");
           }
         });
     } catch (error) {
-      console.log(error);
+      toast.error(error);
     }
   };
 
@@ -152,10 +170,6 @@ const LoginPopup = ({ setShowLogin }) => {
           <button onClick={handleSignup}>Create account</button>
         )}
 
-        <div className="login-popup-condition">
-          <input type="checkbox" required></input>
-          <p>By contnuing, i agree that the information provided is accurate</p>
-        </div>
         {currState === "Login" ? (
           <p>
             Create a new account?{""}

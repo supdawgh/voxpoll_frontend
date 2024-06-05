@@ -8,18 +8,17 @@ import LoginPopup from "./components/LoginPopup/LoginPopup";
 import EventDetails from "./pages/EventDetails/EventDetails";
 import CategorizedEvents from "./pages/CategorizedEvents/CategorizedEvents";
 import Host from "./components/Host/Host";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
-  const [showHost, setShowHost] = useState(false);
 
   return (
     <>
       {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
-      {/* {showHost && <Host setShowHost={setShowHost} />} */}
 
       <div className="app">
-        <Navbar setShowLogin={setShowLogin} setShowHost={setShowHost} />
+        <Navbar setShowLogin={setShowLogin} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/event" element={<Event />} />
@@ -27,11 +26,15 @@ const App = () => {
             path="/event/category/:category"
             element={<CategorizedEvents />}
           />
-          <Route path="/event/:id" element={<EventDetails />} />
-          <Route path="/host" element={<Host />} />
+          <Route
+            path="/event/:id"
+            element={<EventDetails setShowLogin={setShowLogin} />}
+          />
+          <Route path="/host" element={<Host setShowLogin={setShowLogin} />} />
         </Routes>
       </div>
       <Footer />
+      <Toaster />
     </>
   );
 };

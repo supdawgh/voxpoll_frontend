@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import "./Navbar.css";
 import { assets } from "../../assets/assets";
 import { Link } from "react-router-dom";
+import { StoreContext } from "../../context/StoreContext";
 const Navbar = ({ setShowLogin, setShowHost }) => {
   const [menu, setMenu] = useState("home");
+
+  const { auth, setAuth } = useContext(StoreContext);
 
   return (
     <div className="navbar">
@@ -34,8 +37,15 @@ const Navbar = ({ setShowLogin, setShowHost }) => {
         </li>
       </ul>
       <div className="navbar-right">
-        <img src={assets.searchicon} alt="" className="searchicon" />
-        <button onClick={() => setShowLogin(true)}>sign in</button>
+        {auth.user ? (
+          <>
+            <div>{auth.user.name}</div>
+            <button onClick={() => setAuth({})}>Logout</button>
+          </>
+        ) : (
+          <button onClick={() => setShowLogin(true)}>sign in</button>
+        )}
+        {/* <img src={assets.searchicon} alt="" className="searchicon" /> */}
       </div>
     </div>
   );
