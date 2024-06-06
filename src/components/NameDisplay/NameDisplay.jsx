@@ -8,12 +8,13 @@ import { API_BASE_URl } from "../../assets/assets";
 const NameDisplay = ({ category }) => {
   const { auth, axiosins } = useContext(StoreContext);
 
-  const fetcher = (url) => axiosins.get(url).then((r) => r.data);
+  const datatleraaija = (url) => axiosins.get(url).then((r) => r.data);
+
   const {
     data: events,
     error,
     isLoading,
-  } = useSWR(`${API_BASE_URl}/events`, fetcher);
+  } = useSWR(`${API_BASE_URl}/events`, datatleraaija);
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;

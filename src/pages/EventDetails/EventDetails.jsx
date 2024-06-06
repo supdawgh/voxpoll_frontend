@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./EventDetails.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,6 +9,7 @@ import { format } from "date-fns";
 //import { Link } from 'react-router-dom'
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
+
 const EventDetails = ({ setShowLogin }) => {
   const { id } = useParams();
   const { auth } = useContext(StoreContext);

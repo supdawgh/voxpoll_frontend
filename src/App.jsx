@@ -9,6 +9,7 @@ import EventDetails from "./pages/EventDetails/EventDetails";
 import CategorizedEvents from "./pages/CategorizedEvents/CategorizedEvents";
 import Host from "./components/Host/Host";
 import { Toaster } from "react-hot-toast";
+import StoreContextProvider from "./context/StoreContext";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -31,9 +32,12 @@ const App = () => {
             element={<EventDetails setShowLogin={setShowLogin} />}
           />
           <Route path="/host" element={<Host setShowLogin={setShowLogin} />} />
+          <Route path="*" element={<div>404 not found</div>} />
         </Routes>
       </div>
+
       <Footer />
+
       <Toaster />
     </>
   );

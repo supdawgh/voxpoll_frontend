@@ -33,7 +33,6 @@ const Host = ({ setShowLogin }) => {
     isLoading,
   } = useSWR(`${API_BASE_URl}/myevent/all`, fetcher);
 
-  console.log(events);
   const [newEventForm, setNewEventForm] = useState(false);
 
   const [formState, setFormState] = useState(formInitialState);
@@ -125,32 +124,35 @@ const Host = ({ setShowLogin }) => {
             <h2>Your Events</h2>
             <p>{events?.length > 0 ? null : "No events"}</p>
             <div>
-              {events?.map((event) => {
-                return (
-                  <div key={event._id} className="product-card">
-                    <div className="badge">{event.eventStatus}</div>
-                    <div className="product-tumb">
-                      <img src={event.eventBanner} alt=""></img>
-                    </div>
-                    <div className="product-details">
-                      <span className="product-catagory">
-                        {event.eventType}
-                      </span>
-                      <h4>
-                        <a>{event.eventName}</a>
-                      </h4>
-                      <p>{event.eventDescription}</p>
-                      <p>Start: &nbsp; {format(event.eventStartDate, "PPP")}</p>
-                      <p>End: &nbsp; {format(event.eventEndDate, "PPP")}</p>
-                      <div className="product-bottom-details">
-                        <div className="product-price">
-                          Candiates: {event.candidates.length}
+              {events &&
+                events.map((event) => {
+                  return (
+                    <div key={event._id} className="product-card">
+                      <div className="badge">{event.eventStatus}</div>
+                      <div className="product-tumb">
+                        <img src={event.eventBanner} alt=""></img>
+                      </div>
+                      <div className="product-details">
+                        <span className="product-catagory">
+                          {event.eventType}
+                        </span>
+                        <h4>
+                          <a>{event.eventName}</a>
+                        </h4>
+                        <p>{event.eventDescription}</p>
+                        <p>
+                          Start: &nbsp; {format(event.eventStartDate, "PPP")}
+                        </p>
+                        <p>End: &nbsp; {format(event.eventEndDate, "PPP")}</p>
+                        <div className="product-bottom-details">
+                          <div className="product-price">
+                            Candiates: {event.candidates.length}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
         </div>
