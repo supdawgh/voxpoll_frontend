@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import "./EventDetails.css";
+import "./HostDetails.css";
 import { StoreContext } from "../../context/StoreContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { API_BASE_URl } from "../../assets/assets";
@@ -8,7 +8,7 @@ import { format } from "date-fns";
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
 
-const EventDetails = ({ setShowLogin }) => {
+const HostDetails = ({ setShowLogin }) => {
   const { id } = useParams();
   const { auth } = useContext(StoreContext);
 
@@ -16,6 +16,8 @@ const EventDetails = ({ setShowLogin }) => {
     data: event,
     error,
     isLoading,} = useSWR(`${API_BASE_URl}/events/${id}`, fetcher);
+
+console.log(event)
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
@@ -44,14 +46,7 @@ const EventDetails = ({ setShowLogin }) => {
               <div className="name-item-info">
                 <h3>{candidate.name}</h3>
                 <p>{candidate.bio}</p>
-                <button
-                  className="vote-button"
-                  onClick={() => {
-                    if (!auth.user) return setShowLogin(true);
-                  }}
-                >
-                  Vote
-                </button>
+                <div className="vote-count">Vote Count: {candidate.voteCount}</div>
               </div>
             </div>
           ))}
@@ -61,4 +56,4 @@ const EventDetails = ({ setShowLogin }) => {
   );
 };
 
-export default EventDetails;
+export default HostDetails;

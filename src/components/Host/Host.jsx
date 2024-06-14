@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from "uuid";
 import useSWR, { mutate } from "swr";
 import { API_BASE_URl } from "../../assets/assets";
 import { format } from "date-fns";
+import { Link } from "react-router-dom"; 
+
 
 const formInitialState = {
   eventName: "",
@@ -127,7 +129,9 @@ const Host = ({ setShowLogin }) => {
               {events &&
                 events.map((event) => {
                   return (
-                    <div key={event._id} className="product-card">
+                    <Link to={`/host/${event._id}`} key={event._id} className="product-card-link">
+
+                    <div className="product-card">
                       <div className="badge">{event.eventStatus}</div>
                       <div className="product-tumb">
                         <img src={event.eventBanner} alt=""></img>
@@ -146,11 +150,12 @@ const Host = ({ setShowLogin }) => {
                         <p>End: &nbsp; {format(event.eventEndDate, "PPP")}</p>
                         <div className="product-bottom-details">
                           <div className="product-price">
-                            Candiates: {event.candidates.length}
+                            Candidates: {event.candidates.length}
                           </div>
                         </div>
                       </div>
                     </div>
+                    </Link>
                   );
                 })}
             </div>
@@ -207,7 +212,7 @@ const Host = ({ setShowLogin }) => {
                   <option value="pageant">Beauty Pageant</option>
                 </select>
 
-                <label htmlFor="eventName">Event Description</label>
+                <label htmlFor="eventDescription">Event Description</label>
 
                 <textarea
                   value={formState.eventDescription}
@@ -361,7 +366,7 @@ const Host = ({ setShowLogin }) => {
                 </button>
               </div>
 
-              <button>Submit Event</button>
+              <button type="submit">Submit Event</button>
             </form>
           </div>
         )}
