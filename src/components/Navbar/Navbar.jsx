@@ -40,7 +40,13 @@ const Navbar = ({ setShowLogin, setShowHost }) => {
         {auth.user ? (
           <>
             <div>{auth.user.name}</div>
-            <button onClick={() => setAuth({})}>Logout</button>
+            <button
+              onClick={() => {
+                if (window.confirm("Are You Sure?")) setAuth({});
+              }}
+            >
+              Logout
+            </button>
           </>
         ) : (
           <button onClick={() => setShowLogin(true)}>sign in</button>

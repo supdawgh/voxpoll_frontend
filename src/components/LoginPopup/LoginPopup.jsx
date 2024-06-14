@@ -67,6 +67,7 @@ const LoginPopup = ({ setShowLogin }) => {
         .post("/auth", {
           email: formState.email,
           password: formState.password,
+          role: "voter",
         })
         .then((response) => {
           if (response.status === 200) {
