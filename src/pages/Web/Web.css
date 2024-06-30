@@ -1,0 +1,39 @@
+.web-face{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 550px;
+    background-color: #808080;
+}
+button:hover{
+    color: black;
+}
+.web-cam-container {
+    position: relative;
+    display: flex;
+    flex-direction: column; 
+    align-items: center;   
+  }
+.web-cam{
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+    margin:auto;
+   max-width: 600px;
+}
+.web-verify {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.close-button{
+    position: absolute;
+    cursor: pointer;
+    margin-left: 650px;
+}
+.close-button:hover{
+    color: black;
+}
+

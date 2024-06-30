@@ -21,7 +21,7 @@ const NameDisplay = ({ category }) => {
 
   return (
     <div className="name-display" id="name-display">
-      <h2>Upcoming Events</h2>
+      <h2>New Events !!</h2>
       <div className="name-display-list">
         {events.length > 0 ? (
           events.map((event, index) => {
@@ -40,6 +40,7 @@ const NameDisplay = ({ category }) => {
           <div>No recent events</div>
         )}
       </div>
+      <hr/>
     </div>
   );
 };

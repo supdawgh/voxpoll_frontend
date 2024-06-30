@@ -18,7 +18,7 @@ const StoreContextProvider = ({ children }) => {
       Authorization: `Bearer ${auth.accessToken}`,
     },
   });
-
+const contextValue={name_list}
   return (
     <StoreContext.Provider value={{ auth, setAuth, axiosins }}>
       {children}

@@ -231,3 +231,7 @@ h3 {
 .product-links a:hover {
   color: tomato;
 }
+.error-message{
+  color: tomato;
+  margin-bottom: 15px;
+}

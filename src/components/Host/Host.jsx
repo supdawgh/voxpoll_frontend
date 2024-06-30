@@ -1,3 +1,4 @@
+
 import React, { useContext, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import "./Host.css";
@@ -8,6 +9,7 @@ import useSWR, { mutate } from "swr";
 import { API_BASE_URl } from "../../assets/assets";
 import { format } from "date-fns";
 import { Link } from "react-router-dom"; 
+import { useForm } from "react-hook-form";
 
 
 const formInitialState = {
@@ -36,57 +38,57 @@ const Host = ({ setShowLogin }) => {
   } = useSWR(`${API_BASE_URl}/myevent/all`, fetcher);
 
   const [newEventForm, setNewEventForm] = useState(false);
-
   const [formState, setFormState] = useState(formInitialState);
   const [candidates, setCandidates] = useState(candidateInitialState);
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
-  function handleAddCandidate() {
+  function handleAddCandidate(e) {
+    e.preventDefault();
     if (!candidates.name || !candidates.bio || !candidates.photo)
       return toast.error("Provide all fields");
 
-    setFormState((prev) => {
-      return {
-        ...prev,
-        candidates: [
-          ...formState.candidates,
-          {
-            ...candidates,
-            id: uuidv4(),
-          },
-        ],
-      };
-    });
+    setFormState((prev) => ({
+      ...prev,
+      candidates: [
+        ...prev.candidates,
+        { ...candidates, id: uuidv4() },
+      ],
+    }));
     setCandidates(candidateInitialState);
   }
 
   function handleRemoveCandidate(id) {
     if (!id) return;
-    setFormState((prev) => {
-      return {
-        ...prev,
-        candidates: prev.candidates.filter((candidate) => candidate.id !== id),
-      };
-    });
+    setFormState((prev) => ({
+      ...prev,
+      candidates: prev.candidates.filter((candidate) => candidate.id !== id),
+    }));
   }
 
-  function handleSubmitEvent(e) {
-    e.preventDefault();
-    if (
-      !formState.eventName ||
-      !formState.eventType ||
-      !formState.eventDescription ||
-      !formState.eventBanner ||
-      !formState.eventStartDate ||
-      !formState.eventEndDate ||
-      formState.candidates.length === 0
-    ) {
-      return toast.error("Fill all the fields");
+  const handleSubmitEvent = (data) => {
+    if (formState.candidates.length === 0) {
+      return toast.error("Add at least one candidate");
     }
+
+    const {
+      eventName,
+      eventType,
+      eventDescription,
+      eventBanner,
+      eventStartDate,
+      eventEndDate,
+    } = data;
 
     try {
       axiosins
         .post("/myevent", {
-          ...formState,
+          eventName,
+          eventType,
+          eventDescription,
+          eventBanner,
+          eventStartDate,
+          eventEndDate,
+          candidates: formState.candidates,
         })
         .then((response) => {
           if (response.status === 201) {
@@ -96,15 +98,17 @@ const Host = ({ setShowLogin }) => {
             mutate(`${API_BASE_URl}/myevent/all`);
           }
         })
-        .catch((response) => {
-          if (response.response.status == 500) {
+        .catch((error) => {
+          if (error.response?.status === 500) {
             toast.error("Server Error");
+          } else {
+            toast.error("An error occurred");
           }
         });
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message || "An unexpected error occurred");
     }
-  }
+  };
 
   let content;
 
@@ -128,33 +132,26 @@ const Host = ({ setShowLogin }) => {
             <div>
               {events &&
                 events.map((event) => {
+                  const startDate = new Date(event.eventStartDate);
+                  const endDate = new Date(event.eventEndDate);
                   return (
                     <Link to={`/host/${event._id}`} key={event._id} className="product-card-link">
-
-                    <div className="product-card">
-                      <div className="badge">{event.eventStatus}</div>
-                      <div className="product-tumb">
-                        <img src={event.eventBanner} alt=""></img>
-                      </div>
-                      <div className="product-details">
-                        <span className="product-catagory">
-                          {event.eventType}
-                        </span>
-                        <h4>
-                          <a>{event.eventName}</a>
-                        </h4>
-                        <p>{event.eventDescription}</p>
-                        <p>
-                          Start: &nbsp; {format(event.eventStartDate, "PPP")}
-                        </p>
-                        <p>End: &nbsp; {format(event.eventEndDate, "PPP")}</p>
-                        <div className="product-bottom-details">
-                          <div className="product-price">
-                            Candidates: {event.candidates.length}
+                      <div className="product-card">
+                        <div className="badge">{event.eventStatus}</div>
+                        <div className="product-tumb">
+                          <img src={event.eventBanner} alt="Event Banner"></img>
+                        </div>
+                        <div className="product-details">
+                          <span className="product-catagory">{event.eventType}</span>
+                          <h4><a>{event.eventName}</a></h4>
+                          <p>{event.eventDescription}</p>
+                          <p>Start: {format(startDate, "PPP")}</p>
+                          <p>End: {format(endDate, "PPP")}</p>
+                          <div className="product-bottom-details">
+                            <div className="product-price">Candidates: {event.candidates.length}</div>
                           </div>
                         </div>
                       </div>
-                    </div>
                     </Link>
                   );
                 })}
@@ -163,47 +160,33 @@ const Host = ({ setShowLogin }) => {
         </div>
         <div className="host-container">
           <button onClick={() => setNewEventForm((prev) => !prev)}>
-            {" "}
             {newEventForm ? "Close" : "New Event"}
           </button>
         </div>
         {newEventForm && (
           <div>
-            <form className="host-container" onSubmit={handleSubmitEvent}>
+            <form className="host-container" onSubmit={handleSubmit(handleSubmitEvent)}>
               <div className="host-title">
                 <h2>Fill the form to host an event</h2>
-                <p>
-                  The administrator will verify your event before it is hosted
-                </p>
+                <p>The administrator will verify your event before it is hosted</p>
               </div>
               <div className="host-input">
                 <label htmlFor="eventName">Event Name</label>
                 <input
+                  {...register("eventName", { required: "Event name is required" })}
                   value={formState.eventName}
-                  onChange={(e) =>
-                    setFormState((prev) => {
-                      return {
-                        ...prev,
-                        eventName: e.target.value,
-                      };
-                    })
-                  }
+                  onChange={(e) => setFormState({ ...formState, eventName: e.target.value })}
                   type="text"
                   id="eventName"
                   placeholder="Name of your event"
-                  required
                 ></input>
+                {errors.eventName && <p className="error-message">{errors.eventName.message}</p>}
+
                 <label htmlFor="eventType">Event Type</label>
                 <select
+                  {...register("eventType", { required: "Event type is required" })}
                   value={formState.eventType}
-                  onChange={(e) =>
-                    setFormState((prev) => {
-                      return {
-                        ...prev,
-                        eventType: e.target.value,
-                      };
-                    })
-                  }
+                  onChange={(e) => setFormState({ ...formState, eventType: e.target.value })}
                   id="eventType"
                 >
                   <option value="dance">Dancing Competition</option>
@@ -211,116 +194,77 @@ const Host = ({ setShowLogin }) => {
                   <option value="art">Art Competition</option>
                   <option value="pageant">Beauty Pageant</option>
                 </select>
+                {errors.eventType && <p className="error-message">{errors.eventType.message}</p>}
 
                 <label htmlFor="eventDescription">Event Description</label>
-
                 <textarea
+                  {...register("eventDescription", { required: "Event description is required" })}
                   value={formState.eventDescription}
-                  onChange={(e) =>
-                    setFormState((prev) => {
-                      return {
-                        ...prev,
-                        eventDescription: e.target.value,
-                      };
-                    })
-                  }
-                  type="text"
+                  onChange={(e) => setFormState({ ...formState, eventDescription: e.target.value })}
                   placeholder="Event Description"
-                  required
                 ></textarea>
+                {errors.eventDescription && <p className="error-message">{errors.eventDescription.message}</p>}
 
                 <div className="date-input-container">
                   <div>
                     <label htmlFor="startDate">Event Start Date</label>
                     <input
+                      {...register("eventStartDate", { required: "Start date is required" })}
                       value={formState.eventStartDate}
-                      onChange={(e) =>
-                        setFormState((prev) => {
-                          return {
-                            ...prev,
-                            eventStartDate: e.target.value,
-                          };
-                        })
-                      }
+                      onChange={(e) => setFormState({ ...formState, eventStartDate: e.target.value })}
                       type="date"
                       id="startDate"
                       placeholder="Event Start Date"
-                      required
                     ></input>
+                    {errors.eventStartDate && <p className="error-message">{errors.eventStartDate.message}</p>}
                   </div>
                   <div>
                     <label htmlFor="endDate">Event End Date</label>
                     <input
+                      {...register("eventEndDate", { required: "End date is required" })}
                       value={formState.eventEndDate}
-                      onChange={(e) =>
-                        setFormState((prev) => {
-                          return {
-                            ...prev,
-                            eventEndDate: e.target.value,
-                          };
-                        })
-                      }
+                      onChange={(e) => setFormState({ ...formState, eventEndDate: e.target.value })}
                       type="date"
                       id="endDate"
                       placeholder="Event Finish Date"
-                      required
                     ></input>
+                    {errors.eventEndDate && <p className="error-message">{errors.eventEndDate.message}</p>}
                   </div>
                 </div>
+
                 <label htmlFor="eventBanner">Event Banner</label>
                 <input
+                  {...register("eventBanner", { required: "Banner URL is required" })}
                   value={formState.eventBanner}
-                  onChange={(e) =>
-                    setFormState((prev) => {
-                      return {
-                        ...prev,
-                        eventBanner: e.target.value,
-                      };
-                    })
-                  }
+                  onChange={(e) => setFormState({ ...formState, eventBanner: e.target.value })}
                   type="text"
                   id="eventBanner"
                   placeholder="Url of the banner image"
-                  required
                 ></input>
-                <h3>Candidates</h3>
+                {errors.eventBanner && <p className="error-message">{errors.eventBanner.message}</p>}
 
-                {formState.candidates.map((candidate) => {
-                  return (
-                    <div key={candidate.id} className="candidate">
-                      <div className="candiadte-info">
-                        <img
-                          className="candidate-photo"
-                          src={candidate.photo}
-                        ></img>
-                        <div>
-                          <div>{candidate.name}</div>
-                          <div>{candidate.bio}</div>
-                        </div>
-                      </div>
-                      <div
-                        className="cross"
-                        onClick={() => handleRemoveCandidate(candidate.id)}
-                      >
-                        X
+                <h3>Candidates</h3>
+                {formState.candidates.map((candidate) => (
+                  <div key={candidate.id} className="candidate">
+                    <div className="candidate-info">
+                      <img className="candidate-photo" src={candidate.photo} alt="Candidate" />
+                      <div>
+                        <div>{candidate.name}</div>
+                        <div>{candidate.bio}</div>
                       </div>
                     </div>
-                  );
-                })}
+                    <div className="cross" onClick={() => handleRemoveCandidate(candidate.id)}>
+                      <RxCross2 />
+                    </div>
+                  </div>
+                ))}
 
                 <div className="new-candidate">
                   <h3>New Candidate</h3>
                   <label htmlFor="newCandidateName">Candidate Name</label>
                   <input
                     value={candidates.name}
-                    onChange={(e) =>
-                      setCandidates((prev) => {
-                        return {
-                          ...prev,
-                          name: e.target.value,
-                        };
-                      })
-                    }
+                    onChange={(e) => setCandidates({ ...candidates, name: e.target.value })}
                     type="text"
                     id="newCandidateName"
                     placeholder="Name"
@@ -328,14 +272,7 @@ const Host = ({ setShowLogin }) => {
                   <label htmlFor="newCandidateBio">Candidate Bio</label>
                   <input
                     value={candidates.bio}
-                    onChange={(e) =>
-                      setCandidates((prev) => {
-                        return {
-                          ...prev,
-                          bio: e.target.value,
-                        };
-                      })
-                    }
+                    onChange={(e) => setCandidates({ ...candidates, bio: e.target.value })}
                     type="text"
                     id="newCandidateBio"
                     placeholder="Bio"
@@ -343,29 +280,17 @@ const Host = ({ setShowLogin }) => {
                   <label htmlFor="candidateURL">Candidate Photo URL</label>
                   <input
                     value={candidates.photo}
-                    onChange={(e) =>
-                      setCandidates((prev) => {
-                        return {
-                          ...prev,
-                          photo: e.target.value,
-                        };
-                      })
-                    }
+                    onChange={(e) => setCandidates({ ...candidates, photo: e.target.value })}
                     type="text"
                     id="candidateURL"
-                    placeholder="Photo url"
+                    placeholder="Photo URL"
                   ></input>
                 </div>
 
-                <button
-                  onClick={handleAddCandidate}
-                  type="button"
-                  className="candidate-button"
-                >
+                <button type="button" className="candidate-button" onClick={handleAddCandidate}>
                   Add Candidate
                 </button>
               </div>
-
               <button type="submit">Submit Event</button>
             </form>
           </div>
@@ -378,3 +303,4 @@ const Host = ({ setShowLogin }) => {
 };
 
 export default Host;
+

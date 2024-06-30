@@ -1,11 +1,11 @@
-.name-display{
+.nd{
     margin-top: 30px;
 }
-.name-display h2{
+.nd h2{
     font-size: max(5vw 24px);
     font-weight: 300;
 }
-.name-display-list{
+.nd-list{
     display: grid;
     grid-template-columns: repeat(auto-fill,minmax(230px, 1fr));
     margin-top: 30px;

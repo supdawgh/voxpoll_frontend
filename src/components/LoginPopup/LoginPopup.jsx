@@ -1,9 +1,10 @@
+
 import React, { useContext, useState } from "react";
 import "./LoginPopup.css";
 import { RxCross2 } from "react-icons/rx";
 import { StoreContext } from "../../context/StoreContext";
 import toast from "react-hot-toast";
-import { PiXLogoFill } from "react-icons/pi";
+import { useForm } from "react-hook-form";
 
 const initialState = {
   email: "",
@@ -16,81 +17,60 @@ const initialState = {
 const LoginPopup = ({ setShowLogin }) => {
   const [currState, setCurrState] = useState("Login");
 
-  const { auth, axiosins, setAuth } = useContext(StoreContext);
+  const { axiosins, setAuth } = useContext(StoreContext);
 
-  const [formState, setFormState] = useState(initialState);
+  const { register, handleSubmit, formState: { errors }, reset } = useForm();
 
-  const handleSignup = (e) => {
-    e.preventDefault();
-
-    if (
-      !formState.email ||
-      !formState.password ||
-      !formState.name ||
-      !formState.citizenship ||
-      !formState.RPP
-    )
-      return toast.error("Fill all fields.");
-
+  const handleSignup = async (data) => {
     try {
-      axiosins
-        .post("/register", {
-          email: formState.email,
-          password: formState.password,
-          name: formState.name,
-          citizenship: formState.citizenship,
-          RPP: formState.RPP,
-          role: "voter",
-        })
-        .then((response) => {
-          if (response.status === 201) {
-            toast.success("Account Created Successfull");
-            setCurrState("Login");
-            setFormState(initialState);
-          }
-          if (response.status === 409) {
-            toast.error("Account Already Exists");
-          }
-        });
+      const response = await axiosins.post("/register", {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        citizenship: data.citizenship,
+        RPP: data.RPP,
+        role: "voter",
+      });
+
+      if (response.status === 201) {
+        toast.success("Account Created Successfully");
+        setCurrState("Login");
+        reset(initialState);
+      } else if (response.status === 409) {
+        toast.error("Account Already Exists");
+      }
     } catch (error) {
-      toast.error(error);
+      const message = error.response?.data?.message("An error occurred");
+      toast.error(message);
     }
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    if (!formState.email || !formState.password) return;
-
+  const handleLogin = async (data) => {
     try {
-      axiosins
-        .post("/auth", {
-          email: formState.email,
-          password: formState.password,
-          role: "voter",
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            toast.success("Login Successfull");
-            setShowLogin(false);
+      const response = await axiosins.post("/auth", {
+        email: data.email,
+        password: data.password,
+        role: "voter",
+      });
 
-            setAuth({ ...response.data });
-            setFormState(initialState);
-          }
-        })
-        .catch((response) => {
-          if (response.response.status == 401) {
-            toast.error("Credentials did not match");
-          }
-        });
+      if (response.status === 200) {
+        toast.success("Login Successful");
+        setShowLogin(false);
+        setAuth({ ...response.data });
+        reset(initialState);
+      } else {
+        toast.error("Invalid credentials");
+      }
     } catch (error) {
-      toast.error(error);
+      const message = error.response?.data?.message("An error occurred");
+      toast.error(message);
     }
   };
 
   return (
     <div className="login-popup">
-      <form className="login-popup-container">
+      <form className="login-popup-container" onSubmit={handleSubmit(currState === "Login" ? 
+      handleLogin : handleSignup)}>
         <div className="login-popup-title">
           <h2>{currState}</h2>
           <RxCross2 onClick={() => setShowLogin(false)} />
@@ -100,85 +80,78 @@ const LoginPopup = ({ setShowLogin }) => {
             <>
               <input
                 type="text"
+                {...register("name", {
+                  required: "Name is required",
+                  pattern: {
+                    value: /^[A-Za-z\s]+$/,
+                    message: "Name must contain only letters and spaces",
+                  },
+                })}
                 placeholder="Your name"
-                value={formState.name}
-                onChange={(e) =>
-                  setFormState((prev) => {
-                    return {
-                      ...prev,
-                      name: e.target.value,
-                    };
-                  })
-                }
               />
+              {errors.name && <p className="error-message">{errors.name.message}</p>}
               <input
                 type="text"
+                {...register("citizenship", {
+                  required: "Citizenship number is required",
+                  pattern: {
+                    value: /^[A-Za-z0-9]+$/,
+                    message: "Citizenship number must be alphanumeric",
+                  },
+                })}
                 placeholder="Your Citizenship Number"
-                value={formState.citizenship}
-                onChange={(e) =>
-                  setFormState((prev) => {
-                    return {
-                      ...prev,
-                      citizenship: e.target.value,
-                    };
-                  })
-                }
               />
+              {errors.citizenship && <p className="error-message">{errors.citizenship.message}</p>}
               <input
                 type="text"
+                {...register("RPP", {
+                  required: "RPP is required",
+                  pattern: {
+                    value: /^[A-Za-z0-9]+$/,
+                    message: "RPP must be alphanumeric",
+                  },
+                })}
                 placeholder="Your RPP"
-                value={formState.RPP}
-                onChange={(e) =>
-                  setFormState((prev) => {
-                    return {
-                      ...prev,
-                      RPP: e.target.value,
-                    };
-                  })
-                }
-              ></input>
+              />
+              {errors.RPP && <p className="error-message">{errors.RPP.message}</p>}
             </>
           )}
           <input
             type="email"
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: "Invalid email address",
+              },
+            })}
             placeholder="Your email"
-            value={formState.email}
-            onChange={(e) =>
-              setFormState((prev) => {
-                return {
-                  ...prev,
-                  email: e.target.value,
-                };
-              })
-            }
-          ></input>
+          />
+          {errors.email && <p className="error-message">{errors.email.message}</p>}
           <input
             type="password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
             placeholder="Your password"
-            value={formState.password}
-            onChange={(e) =>
-              setFormState((prev) => {
-                return {
-                  ...prev,
-                  password: e.target.value,
-                };
-              })
-            }
-          ></input>
+          />
+          {errors.password && <p className="error-message">{errors.password.message}</p>}
         </div>
-        {currState === "Login" && <button onClick={handleLogin}>Login</button>}
-        {currState === "Sign Up" && (
-          <button onClick={handleSignup}>Create account</button>
-        )}
-
+        <button type="submit">
+          {currState === "Login" ? "Login" : "Create account"}
+        </button>
         {currState === "Login" ? (
           <p>
-            Create a new account?{""}
+            Create a new account?{" "}
             <span onClick={() => setCurrState("Sign Up")}>Click Here</span>
           </p>
         ) : (
           <p>
-            Already have an account?{""}
+            Already have an account?{" "}
             <span onClick={() => setCurrState("Login")}>Login here</span>
           </p>
         )}

@@ -5,13 +5,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { API_BASE_URl } from "../../assets/assets";
 import useSWR from "swr";
 import { format } from "date-fns";
+import Web from "../Web/Web";
 
 const fetcher = (url) => fetch(url).then((r) => r.json());
 
 const EventDetails = ({ setShowLogin }) => {
   const { id } = useParams();
   const { auth } = useContext(StoreContext);
-
+const navigate=useNavigate();
   const {
     data: event,
     error,
@@ -47,8 +48,9 @@ const EventDetails = ({ setShowLogin }) => {
                 <button
                   className="vote-button"
                   onClick={() => {
-                    if (!auth.user) return setShowLogin(true);
-                  }}
+                    
+                    if(!auth.user) return setShowLogin(true)
+                    navigate('/web')}} //esma ho
                 >
                   Vote
                 </button>

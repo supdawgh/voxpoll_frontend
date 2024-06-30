@@ -10,10 +10,10 @@ import CategorizedEvents from "./pages/CategorizedEvents/CategorizedEvents";
 import Host from "./components/Host/Host";
 import { Toaster } from "react-hot-toast";
 import HostDetails from "./pages/HostDetails/HostDetails";
+import Web from "./pages/Web/Web";
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
-
   return (
     <>
       {showLogin && <LoginPopup setShowLogin={setShowLogin} />}
@@ -23,6 +23,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/event" element={<Event />} />
+          <Route path="/web" element={<Web/>}></Route> 
           <Route
             path="/event/category/:category"
             element={<CategorizedEvents />}
