@@ -75,7 +75,7 @@ button {
   margin-bottom: 10px;
 }
 
-.candiadte-info {
+.candidate-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -231,7 +231,7 @@ h3 {
 .product-links a:hover {
   color: tomato;
 }
-.error-message{
+.error-message {
   color: tomato;
   margin-bottom: 15px;
 }

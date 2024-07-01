@@ -1,4 +1,3 @@
-
 import React, { useContext, useState } from "react";
 import "./LoginPopup.css";
 import { RxCross2 } from "react-icons/rx";
@@ -19,7 +18,12 @@ const LoginPopup = ({ setShowLogin }) => {
 
   const { axiosins, setAuth } = useContext(StoreContext);
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
   const handleSignup = async (data) => {
     try {
@@ -41,7 +45,7 @@ const LoginPopup = ({ setShowLogin }) => {
       }
     } catch (error) {
       const message = error.response?.data?.message("An error occurred");
-      toast.error(message);
+      toast.error(message || "Could not login");
     }
   };
 
@@ -62,15 +66,23 @@ const LoginPopup = ({ setShowLogin }) => {
         toast.error("Invalid credentials");
       }
     } catch (error) {
-      const message = error.response?.data?.message("An error occurred");
-      toast.error(message);
+      if (error.response.status === 401) {
+        toast.error(error.response.statusText);
+      } else {
+        const message = error.response?.data?.message("An error occurred");
+        toast.error(message);
+      }
     }
   };
 
   return (
     <div className="login-popup">
-      <form className="login-popup-container" onSubmit={handleSubmit(currState === "Login" ? 
-      handleLogin : handleSignup)}>
+      <form
+        className="login-popup-container"
+        onSubmit={handleSubmit(
+          currState === "Login" ? handleLogin : handleSignup
+        )}
+      >
         <div className="login-popup-title">
           <h2>{currState}</h2>
           <RxCross2 onClick={() => setShowLogin(false)} />
@@ -89,7 +101,9 @@ const LoginPopup = ({ setShowLogin }) => {
                 })}
                 placeholder="Your name"
               />
-              {errors.name && <p className="error-message">{errors.name.message}</p>}
+              {errors.name && (
+                <p className="error-message">{errors.name.message}</p>
+              )}
               <input
                 type="text"
                 {...register("citizenship", {
@@ -101,7 +115,9 @@ const LoginPopup = ({ setShowLogin }) => {
                 })}
                 placeholder="Your Citizenship Number"
               />
-              {errors.citizenship && <p className="error-message">{errors.citizenship.message}</p>}
+              {errors.citizenship && (
+                <p className="error-message">{errors.citizenship.message}</p>
+              )}
               <input
                 type="text"
                 {...register("RPP", {
@@ -113,7 +129,9 @@ const LoginPopup = ({ setShowLogin }) => {
                 })}
                 placeholder="Your RPP"
               />
-              {errors.RPP && <p className="error-message">{errors.RPP.message}</p>}
+              {errors.RPP && (
+                <p className="error-message">{errors.RPP.message}</p>
+              )}
             </>
           )}
           <input
@@ -127,7 +145,9 @@ const LoginPopup = ({ setShowLogin }) => {
             })}
             placeholder="Your email"
           />
-          {errors.email && <p className="error-message">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="error-message">{errors.email.message}</p>
+          )}
           <input
             type="password"
             {...register("password", {
@@ -139,7 +159,9 @@ const LoginPopup = ({ setShowLogin }) => {
             })}
             placeholder="Your password"
           />
-          {errors.password && <p className="error-message">{errors.password.message}</p>}
+          {errors.password && (
+            <p className="error-message">{errors.password.message}</p>
+          )}
         </div>
         <button type="submit">
           {currState === "Login" ? "Login" : "Create account"}

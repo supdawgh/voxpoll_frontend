@@ -12,11 +12,14 @@ const fetcher = (url) => fetch(url).then((r) => r.json());
 const EventDetails = ({ setShowLogin }) => {
   const { id } = useParams();
   const { auth } = useContext(StoreContext);
-const navigate=useNavigate();
+  const navigate = useNavigate();
   const {
     data: event,
     error,
-    isLoading,} = useSWR(`${API_BASE_URl}/events/${id}`, fetcher);
+    isLoading,
+  } = useSWR(`${API_BASE_URl}/events/${id}`, fetcher);
+
+  const today = new Date();
 
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
@@ -45,15 +48,18 @@ const navigate=useNavigate();
               <div className="name-item-info">
                 <h3>{candidate.name}</h3>
                 <p>{candidate.bio}</p>
-                <button
-                  className="vote-button"
-                  onClick={() => {
-                    
-                    if(!auth.user) return setShowLogin(true)
-                    navigate('/web')}} //esma ho
-                >
-                  Vote
-                </button>
+                {new Date(event.eventEndDate) > today &&
+                  new Date(event.eventStartDate) < today && (
+                    <button
+                      className="vote-button"
+                      onClick={() => {
+                        if (!auth.user) return setShowLogin(true);
+                        navigate("/web");
+                      }} //esma ho
+                    >
+                      Vote
+                    </button>
+                  )}
               </div>
             </div>
           ))}

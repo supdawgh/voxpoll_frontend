@@ -19,12 +19,21 @@ const NameDisplay = ({ category }) => {
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
 
+  const today = new Date();
+
+  const newEvents = events.filter((event) => {
+    return (
+      new Date(event.eventEndDate) > today &&
+      new Date(event.eventStartDate) < today
+    );
+  });
+
   return (
     <div className="name-display" id="name-display">
       <h2>New Events !!</h2>
       <div className="name-display-list">
-        {events.length > 0 ? (
-          events.map((event, index) => {
+        {newEvents.length > 0 ? (
+          newEvents.map((event, index) => {
             if (index > 5) return;
             return (
               <NameItem
@@ -40,7 +49,7 @@ const NameDisplay = ({ category }) => {
           <div>No recent events</div>
         )}
       </div>
-      <hr/>
+      <hr />
     </div>
   );
 };

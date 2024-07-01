@@ -1,12 +1,10 @@
-import React, { useContext } from "react";
-import "./NameDisplay2.css";
+import useSWR from "swr";
+import { API_BASE_URl } from "../../assets/assets";
+import { useContext } from "react";
 import { StoreContext } from "../../context/StoreContext";
 import NameItem from "../NameItem/NameItem";
-import { API_BASE_URl } from "../../assets/assets";
-import useSWR from "swr";
 
-const NameDisplay2 = () => {
-  // const {name_list}=useContext(StoreContext)
+function NameDisplay3() {
   const { auth, axiosins } = useContext(StoreContext);
 
   const datatleraaija = (url) => axiosins.get(url).then((r) => r.data);
@@ -19,23 +17,19 @@ const NameDisplay2 = () => {
 
   const today = new Date();
 
-  console.log(events);
-
   if (error) return <div>failed to load</div>;
   if (isLoading) return <div>loading...</div>;
 
-  const finishedEvents = events.filter((event) => {
-    return today > new Date(event.eventEndDate);
+  const upcomingEvents = events.filter((event) => {
+    return today < new Date(event.eventStartDate);
   });
-
-  console.log(finishedEvents);
 
   return (
     <div className="name-display" id="name-display">
-      <h2>Sakisakeko event</h2>
+      <h2>Upcoming event</h2>
       <div className="name-display-list">
-        {finishedEvents.length > 0 ? (
-          finishedEvents.map((event, index) => {
+        {upcomingEvents.length > 0 ? (
+          upcomingEvents.map((event, index) => {
             if (index > 5) return;
             return (
               <NameItem
@@ -48,12 +42,12 @@ const NameDisplay2 = () => {
             );
           })
         ) : (
-          <div>No Finished Competitions</div>
+          <div>No Upcoming Events </div>
         )}
       </div>
       <hr />
     </div>
   );
-};
+}
 
-export default NameDisplay2;
+export default NameDisplay3;
