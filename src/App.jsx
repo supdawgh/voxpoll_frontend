@@ -23,7 +23,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/event" element={<Event />} />
-          <Route path="/web" element={<Web/>}></Route> 
+          <Route path="/web/:id" element={<Web />}></Route>
           <Route
             path="/event/category/:category"
             element={<CategorizedEvents />}
@@ -35,7 +35,6 @@ const App = () => {
           <Route path="/host" element={<Host setShowLogin={setShowLogin} />} />
           <Route path="/host/event/:id" element={<HostDetails />} />
           <Route path="/host/:id" element={<HostDetails />} />
-
         </Routes>
       </div>
 

@@ -37,6 +37,10 @@ const EventDetails = ({ setShowLogin }) => {
 
   let candidates = [];
 
+  const voted = auth.user?.votedEvents?.includes(id) || false;
+
+  console.log(voted);
+
   if (event) {
     candidates = event.candidates;
   }
@@ -103,12 +107,13 @@ const EventDetails = ({ setShowLogin }) => {
                 <h3>{candidate.name}</h3>
                 <p>{candidate.bio}</p>
                 {new Date(event.eventEndDate) > today &&
-                  new Date(event.eventStartDate) < today && (
+                  new Date(event.eventStartDate) < today &&
+                  !voted && (
                     <button
                       className="vote-button"
                       onClick={() => {
                         if (!auth.user) return setShowLogin(true);
-                        navigate("/web");
+                        navigate(`/web/${candidate._id}`);
                       }} //esma ho
                     >
                       Vote
