@@ -32,7 +32,7 @@ const NameDisplay2 = () => {
 
   return (
     <div className="name-display" id="name-display">
-      <h2>Sakisakeko event</h2>
+      <h2>Finished event</h2>
       <div className="name-display-list">
         {finishedEvents.length > 0 ? (
           finishedEvents.map((event, index) => {

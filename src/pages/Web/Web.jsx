@@ -40,8 +40,8 @@ const Web = () => {
       if (capturedImage) {
         const response = await axiosins.post("document/compare-image", {
           webCamImage: capturedImage,
-          citizenshipNumber: "31-65-014543",
-          rastriyaPrarichayaPatraNumber: "R123",
+          citizenshipNumber: auth.user.citizenship || "",
+          rastriyaPrarichayaPatraNumber: auth.user.RPP || "",
           candidate: id,
           voter: auth.user._id,
         });
@@ -57,14 +57,15 @@ const Web = () => {
         }
       }
     } catch (error) {
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         setIdentityError(true);
         toast.error("Face did not match");
+      } else {
+        console.error(
+          "Error sending image:",
+          error.response ? error.response.data : error.message
+        );
       }
-      console.error(
-        "Error sending image:",
-        error.response ? error.response.data : error.message
-      );
     } finally {
       setIsVoting(false);
     }
